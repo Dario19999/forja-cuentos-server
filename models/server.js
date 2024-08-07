@@ -19,7 +19,7 @@ class Server {
     }
 
     routes() {
-        this.express.use('/api/users', require('../routes/users'));
+        this.express.use('/api/user', require('../routes/user'));
     }
 
     listen() {
