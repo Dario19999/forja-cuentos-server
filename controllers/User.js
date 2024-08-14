@@ -1,3 +1,5 @@
+const User = require('../models/User');
+
 const getUser = (req, res) => {    
     res.json({
         msg: 'get API'
