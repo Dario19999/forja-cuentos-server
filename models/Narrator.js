@@ -3,52 +3,44 @@ const { sequelize } = require('../database/config');
 
 const Tale = require('./Tale');
 
-class User extends Model {}
+class Narrator extends Model {}
 
-User.init({
+Narrator.init({
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
         allowNull: false
     },
-    name: {
-        type: DataTypes.STRING(30),
+    alias: {
+        type: DataTypes.STRING(100),
         allowNull: false
     },
-    lastName: {
+    type: {
         type: DataTypes.STRING(50),
         allowNull: true
     },
-    secondLastName: {
+    voiceReference: {
         type: DataTypes.STRING(50),
         allowNull: true
-    },
-    email: {
-        type: DataTypes.STRING(30),
-        allowNull: false
-    },
-    password: {
-        type: DataTypes.STRING,
-        allowNull: false
     }
 }, {
     sequelize,
-    tableName: 'Users',
-    modelName: 'user'
-});
+    tableName: 'Narrators',
+    modelName: 'narrator'
+});	
 
-User.hasMany(Tale, {
-    foreignKey: 'authorId',
+Narrator.hasMany(Tale, { 
+    foreignKey: 'narratorId',
     sourceKey: 'id',
-    onDelete: 'CASCADE'
+    onDelete: 'SET NULL'
 });
 
-Tale.belongsTo(User, {
-    foreignKey: 'authorId',
+Tale.belongsTo(Narrator, {
+    foreignKey: 'narratorId',
     targetKey: 'id'
-});
+})
 
 sequelize.sync();
 
-module.exports = User;
+module.exports = Narrator;
