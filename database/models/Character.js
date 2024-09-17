@@ -1,5 +1,4 @@
 const { DataTypes, Model } = require('sequelize');
-const { sequelize } = require('../database/config');
 
 class Character extends Model {}
 
@@ -26,8 +25,10 @@ Character.init({
         type: DataTypes.TEXT,
         allowNull: false
     }
+}, {
+    sequelize,
+    tableName: 'Characters',
+    modelName: 'character'
 });
-
-sequelize.sync();
 
 module.exports = Character;

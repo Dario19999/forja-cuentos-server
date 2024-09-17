@@ -1,5 +1,5 @@
 const { DataTypes, Model } = require('sequelize');
-const { sequelize } = require('../database/config');
+const { sequelize } = require('../config/database');
 
 const Tale = require('./Tale');
 
@@ -40,7 +40,5 @@ Tale.belongsTo(Narrator, {
     foreignKey: 'narratorId',
     targetKey: 'id'
 })
-
-sequelize.sync();
 
 module.exports = Narrator;
