@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { sequelize } = require('../database/config');
+const { sequelize } = require('../database/config/database');
 
 class Server {
     constructor() {
