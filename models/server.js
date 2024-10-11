@@ -34,6 +34,10 @@ class Server {
 
     routes() {
         this.express.use('/api/user', require('../routes/user'));
+        this.express.use('/api/character', require('../routes/character'));
+        this.express.use('/api/narrator', require('../routes/narrator'));
+        this.express.use('/api/tale', require('../routes/tale'));
+
     }
 
     listen() {
