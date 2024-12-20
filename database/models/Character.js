@@ -1,6 +1,8 @@
 const { DataTypes, Model } = require('sequelize');
 const { sequelize } = require('../config/database');
 
+const TaleCharacter = require('./TaleCharacter');
+
 class Character extends Model {}
 
 Character.init({
@@ -8,10 +10,6 @@ Character.init({
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
-        allowNull: false
-    },
-    taleId: {
-        type: DataTypes.INTEGER,
         allowNull: false
     },
     name: {
@@ -30,6 +28,18 @@ Character.init({
     sequelize,
     tableName: 'Characters',
     modelName: 'character'
+});
+
+
+Character.hasMany(TaleCharacter, {
+    foreignKey: 'characterId',
+    sourceKey: 'id',
+    onDelete: 'CASCADE'
+});
+
+TaleCharacter.belongsTo(Character, {
+    foreignKey: 'characterId',
+    targetKey: 'id'
 });
 
 module.exports = Character;
