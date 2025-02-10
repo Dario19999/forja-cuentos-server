@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { sequelize } = require('../database/config/database');
+const { sequelize } = require('./config/database');
 
 class Server {
     constructor() {
@@ -38,6 +38,26 @@ class Server {
         this.express.use('/api/narrator', require('../routes/narrator'));
         this.express.use('/api/tale', require('../routes/tale'));
 
+        // Guard routes
+        this.express.use((req, res, next) => {
+            const error = {
+            status: 404,
+            message: "Route not found",
+            };
+            next(error);
+        });
+        
+        this.express.use((error, req, res, next) => {
+            res.status(error.status || 500);
+            console.log("ERROR", error);
+            res.json({
+            error: {
+                message: error.message,
+                status: error.status,
+            },
+            });
+        });
+
     }
 
     listen() {
@@ -45,6 +65,7 @@ class Server {
             console.log(`Server is running on port ${this.port}`);
         });
     }
+
 }
 
 module.exports = Server;

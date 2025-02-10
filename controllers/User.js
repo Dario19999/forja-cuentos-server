@@ -1,6 +1,18 @@
 const User = require('../database/models/User');
 
+const getUsers = async (req, res) => {    
+    try {
+        const userModel = User;
+        const users = await userModel.findAll();
+        res.json(users);
+    } catch (error) {
+        
+        res.status(500).json({ msg: 'Internal Server Error', error: error.message });
+    }
+}
+
 const getUser = (req, res) => {    
+
     res.json({
         msg: 'get API'
     });
@@ -38,6 +50,7 @@ const notFound = (req, res) => {
 
 module.exports = {
     getUser,
+    getUsers,
     createUser,
     updateUser,
     deleteUser,

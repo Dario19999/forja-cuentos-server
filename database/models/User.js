@@ -29,7 +29,7 @@ User.init({
         allowNull: false
     },
     password: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(20),
         allowNull: false
     }
 }, {
