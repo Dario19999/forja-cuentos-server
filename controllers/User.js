@@ -1,27 +1,27 @@
-const Tale = require('../database/models/Tale');
+const User = require('../database/models/User');
 
-const getTale = (req, res) => {    
+const getUser = (req, res) => {    
     res.json({
         msg: 'get API'
     });
-}   
+}
 
-const createTale = (req, res) => {    
+const createUser = (req, res) => {    
     res.json({
         msg: 'post API'
     });
 }
 
-const updateTale = (req, res) => {        
-    const id = req.params.taleId;
+const updateUser = (req, res) => {        
+    const id = req.params.userId;
     res.json({
         msg: 'put API',
         id
     });
 }
 
-const deleteTale = (req, res) => {
-    const id = req.params.taleId;
+const deleteUser = (req, res) => {
+    const id = req.params.userId;
     res.json({
         msg: 'delete API',
         id
@@ -29,7 +29,7 @@ const deleteTale = (req, res) => {
 }
 
 const notFound = (req, res) => {
-    const id = req.params.taleId;
+    const id = req.params.userId;
     res.status(404).json({
         msg: '404 - Not Found',
         id
@@ -37,9 +37,9 @@ const notFound = (req, res) => {
 }
 
 module.exports = {
-    getTale,
-    createTale,
-    updateTale,
-    deleteTale,
+    getUser,
+    createUser,
+    updateUser,
+    deleteUser,
     notFound
 }
