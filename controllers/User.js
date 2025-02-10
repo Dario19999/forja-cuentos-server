@@ -11,33 +11,78 @@ const getUsers = async (req, res) => {
     }
 }
 
-const getUser = (req, res) => {    
-
-    res.json({
-        msg: 'get API'
-    });
+const getUser = async (req, res) => {    
+    try {
+        const userModel = User;
+        const id = req.params.userId;
+        const user = await userModel.findByPk(id);
+        if (!user) {
+            return res.status(404).json({ msg: 'User not found' });
+        }
+        res.json({ msg: "test", user: user });
+        console.log("ID", id);
+    } catch (error) {
+        res.status(500).json({ msg: 'Internal Server Error', error: error.message });
+    }
 }
 
-const createUser = (req, res) => {    
-    res.json({
-        msg: 'post API'
-    });
+const createUser = async (req, res) => {
+    try {
+        const newUser = req.body;
+        const userModel = User;
+        const createdUser = await userModel.create(newUser);
+        res.status(201).json({
+            msg: 'User created successfully',
+            createdUser
+        });
+    } catch (error) {
+        res.status(500).json({ msg: 'Internal Server Error', error: error.message });
+    }
 }
 
-const updateUser = (req, res) => {        
-    const id = req.params.userId;
-    res.json({
-        msg: 'put API',
-        id
-    });
+const updateUser = async (req, res) => {
+
+    try {
+        const userInfo = req.body;
+        const userModel = User;
+        const id = req.params.userId;
+        const updatedRows = await userModel.update(userInfo, {
+            where: { id: id }
+        });
+        
+        if (updatedRows) {
+            const updatedUser = await userModel.findByPk(id);
+            return res.json({
+                msg: 'User updated successfully',
+                updatedUser
+            });
+        }
+        res.status(404).json({ msg: 'User not found' });
+    } catch (error) {
+        res.status(500).json({ msg: 'Internal Server Error', error: error.message });
+    }
 }
 
-const deleteUser = (req, res) => {
-    const id = req.params.userId;
-    res.json({
-        msg: 'delete API',
-        id
-    });
+const deleteUser = async (req, res) => {
+    try {       
+        const id = req.params.userId;
+        
+        const userModel = User;
+        const deletedRows = await userModel.destroy({
+            where: { id: id },
+            logging: console.log
+        });
+
+        if (deletedRows) {
+            return res.json({
+                msg: 'User deleted successfully',
+                id
+            });
+        }
+        res.status(404).json({ msg: 'User not found' });
+    } catch (error) {
+        res.status(500).json({ msg: 'Internal Server Error', error: error.message });
+    }
 }
 
 const notFound = (req, res) => {
