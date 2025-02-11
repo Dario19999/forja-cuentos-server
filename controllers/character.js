@@ -1,7 +1,6 @@
 const Character = require('../database/models/Character');
 
 const getCharacters = async (req, res) => {    
-
     try {
         const characterModel = Character;
         const characters = await characterModel.findAll();
@@ -53,11 +52,11 @@ const updateCharacter = async (req, res) => {
         if (updatedRows) {
             const updatedCharacter = await characterModel.findByPk(id);
             return res.json({
-                msg: 'User updated successfully',
+                msg: 'Character updated successfully',
                 updatedCharacter
             });
         }
-        res.status(404).json({ msg: 'User not found' });
+        res.status(404).json({ msg: 'Character not found' });
     } catch (error) {
         res.status(500).json({ msg: 'Internal Server Error', error: error.message });
     }

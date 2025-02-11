@@ -1,5 +1,6 @@
 const {Router} = require('express');
 const {
+    getNarrators,
     getNarrator,
     createNarrator,
     updateNarrator,
@@ -9,14 +10,16 @@ const {
 
 const router = Router();
 
-router.get('/', getNarrator);
+router.get('/list', getNarrators);
+
+router.get('/:narratorId', getNarrator);
 
 router.post('/', createNarrator);
 
-router.put('*', notFound);
-
-router.delete('/', deleteNarrator);
-
 router.put('/:narratorId', updateNarrator);
+
+router.delete('/:narratorId', deleteNarrator);
+
+router.put('*', notFound);
 
 module.exports = router;
