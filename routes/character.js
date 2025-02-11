@@ -1,6 +1,7 @@
 const {Router} = require('express');
 
 const {
+    getCharacters,
     getCharacter,
     createCharacter,
     updateCharacter,
@@ -10,13 +11,15 @@ const {
 
 const router = Router();
 
-router.get('/', getCharacter);
+router.get('/list', getCharacters);
+
+router.get('/:characterId', getCharacter);
 
 router.post('/', createCharacter);
 
 router.put('/:characterId', updateCharacter);
 
-router.delete('/', deleteCharacter);
+router.delete('/:characterId', deleteCharacter);
 
 router.put('*', notFound);
 

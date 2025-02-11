@@ -6,7 +6,6 @@ const getUsers = async (req, res) => {
         const users = await userModel.findAll();
         res.json(users);
     } catch (error) {
-        
         res.status(500).json({ msg: 'Internal Server Error', error: error.message });
     }
 }
@@ -19,7 +18,7 @@ const getUser = async (req, res) => {
         if (!user) {
             return res.status(404).json({ msg: 'User not found' });
         }
-        res.json({ msg: "test", user: user });
+        res.json(user);
         console.log("ID", id);
     } catch (error) {
         res.status(500).json({ msg: 'Internal Server Error', error: error.message });
