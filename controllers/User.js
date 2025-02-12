@@ -1,4 +1,7 @@
 const User = require('../database/models/User');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
 const getUsers = async (req, res) => {    
     try {
@@ -29,10 +32,28 @@ const createUser = async (req, res) => {
     try {
         const newUser = req.body;
         const userModel = User;
+ 
+        const existingUser = await userModel.findOne({ where: { email: newUser.email } });
+        if (existingUser) {
+            return res.status(409).json({ msg: 'User already exists' });
+        }
+
+        const hashedPassword = await bcrypt.hash(newUser.password, 10);
+        newUser.password = hashedPassword;
+
         const createdUser = await userModel.create(newUser);
+
+        // Omit password and timestamps from the response
+        const { 
+            password,
+            createdAt, 
+            updatedAt, 
+            ...publicUser
+        } = createdUser.dataValues;
+
         res.status(201).json({
             msg: 'User created successfully',
-            createdUser
+            createdUser: publicUser
         });
     } catch (error) {
         res.status(500).json({ msg: 'Internal Server Error', error: error.message });
@@ -84,6 +105,49 @@ const deleteUser = async (req, res) => {
     }
 }
 
+const logout = (req, res) => {
+    res.clearCookie('access_token').json({ msg: 'Logged out successfully' });
+}
+
+const login = async (req, res) => {
+    try {
+        const userModel = User;
+        const { email, password } = req.body;
+        const user = await userModel.findOne({
+            where: { email }
+        });
+
+        if (!user) {
+            return res.status(401).json({ msg: 'Invalid credentials' });
+        }
+        const isMatch = await bcrypt.compare(password, user.dataValues.password);
+        if (!isMatch) {
+            return res.status(401).json({ msg: 'Invalid credentials' });
+        }
+
+        const token = await jwt.sign({ id: user.dataValues.id, email: user.dataValues.email }, process.env.SECRET_JWT, { expiresIn: '1h' });
+
+        // Omit password and timestamps from the response
+        const { 
+            password: _,
+            createdAt, 
+            updatedAt, 
+            ...publicUser
+        } = user.dataValues;
+
+        res
+        .cookie('access_token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 1000 * 60 * 60 // 1 hour
+        })
+        .json({ publicUser, token });
+    } catch (error) {
+        res.status(500).json({ msg: 'Internal Server Error', error: error.message });
+    }
+}
+
 const notFound = (req, res) => {
     const id = req.params.userId;
     res.status(404).json({
@@ -98,5 +162,7 @@ module.exports = {
     createUser,
     updateUser,
     deleteUser,
+    login,
+    logout,
     notFound
 }

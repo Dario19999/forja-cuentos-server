@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const { sequelize } = require('./config/database');
+const cookieParser = require('cookie-parser');
 
 class Server {
     constructor() {
@@ -30,6 +31,7 @@ class Server {
         this.express.use(express.static('public'));
         this.express.use(cors());
         this.express.use(express.json());
+        this.express.use(cookieParser());
     }
 
     routes() {
