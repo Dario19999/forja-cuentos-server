@@ -1,4 +1,5 @@
 const Character = require('../database/models/Character');
+const authenticateToken = require('../middleware/auth');
 
 const getCharacters = async (req, res) => {    
     try {
@@ -40,7 +41,6 @@ const createCharacter = async (req, res) => {
 }
 
 const updateCharacter = async (req, res) => {        
-
     try {
         const characterInfo = req.body;
         const characterModel = Character;
@@ -93,10 +93,10 @@ const notFound = (req, res) => {
 }
 
 module.exports = {
-    getCharacters,
-    getCharacter,
-    createCharacter,
-    updateCharacter,
-    deleteCharacter,
+    getCharacters: [authenticateToken, getCharacters],
+    getCharacter: [authenticateToken, getCharacter],
+    createCharacter: [authenticateToken, createCharacter],
+    updateCharacter: [authenticateToken, updateCharacter],
+    deleteCharacter: [authenticateToken, deleteCharacter],
     notFound
 }

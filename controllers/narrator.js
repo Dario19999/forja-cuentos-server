@@ -1,4 +1,5 @@
 const Narrator = require('../database/models/Narrator');
+const authenticateToken = require('../middleware/auth');
 
 const getNarrators = async (req, res) => {    
     try {
@@ -92,10 +93,10 @@ const notFound = (req, res) => {
 }
 
 module.exports = {
-    getNarrators,
-    getNarrator,
-    createNarrator,
-    updateNarrator,
-    deleteNarrator,
+    getNarrators: [authenticateToken, getNarrators],
+    getNarrator: [authenticateToken, getNarrator],
+    createNarrator: [authenticateToken, createNarrator],
+    updateNarrator: [authenticateToken, updateNarrator],
+    deleteNarrator: [authenticateToken, deleteNarrator],
     notFound
 }
