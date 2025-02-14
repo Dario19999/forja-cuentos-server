@@ -1,6 +1,8 @@
 const User = require('../database/models/User');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const authenticateToken = require('../middleware/auth');
+
 require('dotenv').config();
 
 const getUsers = async (req, res) => {    
@@ -157,11 +159,11 @@ const notFound = (req, res) => {
 }
 
 module.exports = {
-    getUser,
-    getUsers,
+    getUser: [authenticateToken, getUser],
+    getUsers: [authenticateToken, getUsers],
     createUser,
-    updateUser,
-    deleteUser,
+    updateUser: [authenticateToken, updateUser],
+    deleteUser: [authenticateToken, deleteUser],
     login,
     logout,
     notFound
