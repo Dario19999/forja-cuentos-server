@@ -5,16 +5,6 @@ const authenticateToken = require('../middleware/auth');
 
 require('dotenv').config();
 
-const getUsers = async (req, res) => {    
-    try {
-        const userModel = User;
-        const users = await userModel.findAll();
-        res.json(users);
-    } catch (error) {
-        res.status(500).json({ msg: 'Internal Server Error', error: error.message });
-    }
-}
-
 const getUser = async (req, res) => {    
     try {
         const userModel = User;
@@ -160,7 +150,6 @@ const notFound = (req, res) => {
 
 module.exports = {
     getUser: [authenticateToken, getUser],
-    getUsers: [authenticateToken, getUsers],
     createUser,
     updateUser: [authenticateToken, updateUser],
     deleteUser: [authenticateToken, deleteUser],
