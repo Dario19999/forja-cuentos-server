@@ -12,6 +12,10 @@ Narrator.init({
         autoIncrement: true,
         allowNull: false
     },
+    authorId: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
     alias: {
         type: DataTypes.STRING(100),
         allowNull: false

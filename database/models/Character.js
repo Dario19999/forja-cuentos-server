@@ -12,6 +12,10 @@ Character.init({
         autoIncrement: true,
         allowNull: false
     },
+    authorId: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
     name: {
         type: DataTypes.STRING(50),
         allowNull: false
