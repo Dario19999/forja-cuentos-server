@@ -17,6 +17,10 @@ Tale.init({
         type: DataTypes.INTEGER,
         allowNull: false
     },
+    taleImage: {
+        type: DataTypes.STRING(255),
+        allowNull: false
+    },
     title: {
         type: DataTypes.STRING(100),
         allowNull: false
