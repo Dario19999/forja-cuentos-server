@@ -28,10 +28,11 @@ User.init({
     },
     email: {
         type: DataTypes.STRING(30),
-        allowNull: false
+        allowNull: false,
+        unique: true
     },
     password: {
-        type: DataTypes.STRING(20),
+        type: DataTypes.STRING(80),
         allowNull: false
     }
 }, {
