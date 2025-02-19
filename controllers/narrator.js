@@ -6,7 +6,7 @@ const getNarrators = async (req, res) => {
         const narratorModel = Narrator;
         const narrators = await narratorModel.findAll({
             where: { 
-                authorId: req.params.authorId,
+                authorId: req.query.authorId,
             }
         }
         );

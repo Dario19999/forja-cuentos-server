@@ -1,12 +1,12 @@
 const Character = require('../database/models/Character');
 const authenticateToken = require('../middleware/auth');
 
-const getCharacters = async (req, res) => {    
+const getCharacters = async (req, res) => {
     try {
         const characterModel = Character;
         const characters = await characterModel.findAll({
             where: { 
-                authorId: req.params.authorId,
+                authorId: req.query.authorId,
             }
         });
         res.json(characters);
