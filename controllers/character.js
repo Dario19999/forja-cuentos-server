@@ -4,7 +4,11 @@ const authenticateToken = require('../middleware/auth');
 const getCharacters = async (req, res) => {    
     try {
         const characterModel = Character;
-        const characters = await characterModel.findAll();
+        const characters = await characterModel.findAll({
+            where: { 
+                authorId: req.params.authorId,
+            }
+        });
         res.json(characters);
     } catch (error) {
         res.status(500).json({ msg: 'Internal Server Error', error: error.message });

@@ -4,7 +4,12 @@ const authenticateToken = require('../middleware/auth');
 const getNarrators = async (req, res) => {    
     try {
         const narratorModel = Narrator;
-        const narrators = await narratorModel.findAll();
+        const narrators = await narratorModel.findAll({
+            where: { 
+                authorId: req.params.authorId,
+            }
+        }
+        );
         res.json(narrators);
     } catch (error) {
         res.status(500).json({ msg: 'Internal Server Error', error: error.message });
