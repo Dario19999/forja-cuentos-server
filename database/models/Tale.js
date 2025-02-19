@@ -29,10 +29,6 @@ Tale.init({
         type: DataTypes.STRING(30),
         allowNull: false
     },
-    creationDate: {
-        type: DataTypes.DATE,
-        allowNull: false
-    },
     introduction: {
         type: DataTypes.TEXT,
         allowNull: false
