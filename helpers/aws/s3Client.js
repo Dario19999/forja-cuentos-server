@@ -15,6 +15,7 @@ class S3Client {
     }
 
     async uploadFile(file, userId, taleName) {
+        taleName = taleName.toLowerCase().replace(/ /g, '-');
         const key = `tales/${userId}/${taleName}/${file.originalname}`;
         const params = {
             Bucket: process.env.AWS_S3_BUCKET,
