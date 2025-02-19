@@ -1,6 +1,10 @@
 const {Router} = require('express');
+const multer = require('multer');
+
+const upload = multer({ storage: multer.memoryStorage() });
 
 const {
+    getTales,
     getTale,
     createTale,
     updateTale,
@@ -10,13 +14,15 @@ const {
 
 const router = Router();
 
-router.get('/', getTale);
+router.get('/list', getTales);
 
-router.post('/', createTale);
+router.get('/:taleId', getTale);
+
+router.post('/', upload.single('taleImage'), createTale);
 
 router.put('/:taleId', updateTale);
 
-router.delete('/', deleteTale);
+router.delete('/:taleId', deleteTale);
 
 router.put('*', notFound);
 
