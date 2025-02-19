@@ -1,6 +1,5 @@
 const Tale = require('../database/models/Tale');
 const TaleCharacter = require('../database/models/TaleCharacter');
-const TaleNarrator = require('../database/models/TaleNarrator');
 const authenticateToken = require('../middleware/auth');
 const S3Client = require('../helpers/aws/s3Client');
 
@@ -47,10 +46,14 @@ const createTale = async (req, res) => {
 
         const newTale = await Tale.create(newTaleData);
         
-        const newNarration = await TaleNarrator.create({
-            taleId: newTale.id,
-            narratorId
-        })
+        if (characters && characters.length > 0) {
+            const taleCharacters = characters.map(characterId => ({
+              taleId: tale.id,
+              characterId: parseInt(characterId),
+            }));
+      
+            await TaleCharacter.bulkCreate(taleCharacters);
+        }
 
         res.status(201).json({
             msg: 'Tale created successfully',

@@ -74,4 +74,6 @@ Character.belongsTo(User, {
     targetKey: 'id'
 });
 
+User.sync();
+
 module.exports = User;

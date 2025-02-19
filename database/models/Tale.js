@@ -2,7 +2,6 @@ const { DataTypes, Model } = require('sequelize');
 const { sequelize } = require('../config/database');
 
 const TaleCharacter = require('./TaleCharacter');
-const TaleNarrator  = require('./TaleNarrator');
 
 class Tale extends Model {}
 
@@ -14,6 +13,10 @@ Tale.init({
         allowNull: false
     },
     authorId: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    narratorId: {
         type: DataTypes.INTEGER,
         allowNull: false
     },
@@ -62,17 +65,6 @@ Tale.hasMany(TaleCharacter, {
 });
 
 TaleCharacter.belongsTo(Tale, {
-    foreignKey: 'taleId',
-    targetKey: 'id'
-});
-
-Tale.hasMany(TaleNarrator, {
-    foreignKey: 'taleId',
-    sourceKey: 'id',
-    onDelete: 'CASCADE'
-});
-
-TaleNarrator.belongsTo(Tale, {
     foreignKey: 'taleId',
     targetKey: 'id'
 });
