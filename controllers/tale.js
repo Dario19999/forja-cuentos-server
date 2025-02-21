@@ -1,7 +1,10 @@
 const Tale = require('../database/models/Tale');
 const TaleCharacter = require('../database/models/TaleCharacter');
+
 const authenticateToken = require('../middleware/auth');
+
 const S3Client = require('../helpers/aws/s3Client');
+const Generator = require('../helpers/transformers/textGeneration');
 
 const getTales = async (req, res) => {    
     try {
@@ -32,8 +35,9 @@ const getTale = async (req, res) => {
 
 const createTale = async (req, res) => {    
     const s3Client = new S3Client();
+    const generator = new Generator();
 
-    const {narratorId, characters, ...newTaleData} = req.body;
+    const {characters, ...newTaleData} = req.body;
 
     try {
         const existingTale = await Tale.findOne({ where: { title: newTaleData.title } }); 
@@ -44,11 +48,21 @@ const createTale = async (req, res) => {
         const {key} = await s3Client.uploadFile(req.file, newTaleData.authorId, newTaleData.title);
         newTaleData.taleImage = key;
 
+        const talePrompt = `
+            Como escritor latinoamericano, genera un cuento literario con la siguiente estructura:
+            Género: Cuento de terror
+            Introducción: Un jardín abandonado en Buenos Aires...
+            Desarrollo: Dos amigos encuentran una puerta secreta...
+            Conclusión: La puerta los lleva a su propia infancia.
+        `
+
+        
+
         const newTale = await Tale.create(newTaleData);
         
         if (characters && characters.length > 0) {
             const taleCharacters = characters.map(characterId => ({
-              taleId: tale.id,
+              taleId: newTale.id,
               characterId: parseInt(characterId),
             }));
       
@@ -57,8 +71,7 @@ const createTale = async (req, res) => {
 
         res.status(201).json({
             msg: 'Tale created successfully',
-            newTale,
-            newNarration
+            newTale
         });
     } 
     catch (error) {
