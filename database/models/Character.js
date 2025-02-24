@@ -38,7 +38,7 @@ Character.init({
 Character.hasMany(TaleCharacter, {
     foreignKey: 'characterId',
     sourceKey: 'id',
-    onDelete: 'CASCADE'
+    onDelete: 'RESTRICT',
 });
 
 TaleCharacter.belongsTo(Character, {
