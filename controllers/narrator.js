@@ -1,10 +1,11 @@
 const Narrator = require('../database/models/Narrator');
+const Tale = require('../database/models/Tale');
+
 const authenticateToken = require('../middleware/auth');
 
 const getNarrators = async (req, res) => {    
     try {
-        const narratorModel = Narrator;
-        const narrators = await narratorModel.findAll({
+        const narrators = await Narrator.findAll({
             where: { 
                 authorId: req.user.id,
             }
@@ -18,9 +19,8 @@ const getNarrators = async (req, res) => {
 
 const getNarrator = async (req, res) => {    
     try {
-        const narratorModel = Narrator;
         const id = req.params.narratorId;
-        const narrator = await narratorModel.findByPk(id);
+        const narrator = await Narrator.findByPk(id);
         if (!narrator) {
             return res.status(404).json({ msg: 'Narrator not found' });
         }
@@ -34,8 +34,7 @@ const getNarrator = async (req, res) => {
 const createNarrator = async (req, res) => {    
     try {
         const newNarrator = req.body;
-        const narratorModel = Narrator;
-        const createdNarrator = await narratorModel.create(newNarrator);
+        const createdNarrator = await Narrator.create(newNarrator);
         res.status(201).json({
             msg: 'Narrator created successfully',
             createdNarrator
@@ -48,14 +47,22 @@ const createNarrator = async (req, res) => {
 const updateNarrator = async (req, res) => {        
     try {
         const narratorInfo = req.body;
-        const narratorModel = Narrator;
         const id = req.params.narratorId;
-        const updatedRows = await narratorModel.update(narratorInfo, {
+
+        const isInUse = await Tale.findOne({
+            where: { narratorId: id }
+        });
+
+        if (isInUse) {
+            return res.status(409).json({ msg: 'Narrator in use' });
+        }
+
+        const updatedRows = await Narrator.update(narratorInfo, {
             where: { id: id }
         });
         
         if (updatedRows) {
-            const updatedNarrator = await narratorModel.findByPk(id);
+            const updatedNarrator = await Narrator.findByPk(id);
             return res.json({
                 msg: 'Narrator updated successfully',
                 updatedNarrator
@@ -70,9 +77,16 @@ const updateNarrator = async (req, res) => {
 const deleteNarrator = async (req, res) => {
     try {       
         const id = req.params.narratorId;
+
+        const isInUse = await Tale.findOne({
+            where: { narratorId: id }
+        });
+
+        if (isInUse) {
+            return res.status(409).json({ msg: 'Narrator in use' });
+        }
         
-        const narratorModel = Narrator;
-        const deletedRows = await narratorModel.destroy({
+        const deletedRows = await Narrator.destroy({
             where: { id: id },
             logging: console.log
         });
