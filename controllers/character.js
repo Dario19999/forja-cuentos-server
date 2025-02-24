@@ -5,8 +5,7 @@ const authenticateToken = require('../middleware/auth');
 
 const getCharacters = async (req, res) => {
     try {
-        const characterModel = Character;
-        const characters = await characterModel.findAll({
+        const characters = await Character.findAll({
             where: { 
                 authorId: req.user.id,
             }
@@ -19,9 +18,8 @@ const getCharacters = async (req, res) => {
 
 const getCharacter = async (req, res) => {    
     try {
-        const characterModel = Character;
         const id = req.params.characterId;
-        const character = await characterModel.findByPk(id);
+        const character = await Character.findByPk(id);
         if (!character) {
             return res.status(404).json({ msg: 'Character not found' });
         }
@@ -35,8 +33,7 @@ const getCharacter = async (req, res) => {
 const createCharacter = async (req, res) => {    
     try {
         const newCharacter = req.body;
-        const characterModel = Character;
-        const createdCharacter = await characterModel.create(newCharacter);
+        const createdCharacter = await Character.create(newCharacter);
         res.status(201).json({
             msg: 'Character created successfully',
             createdCharacter
@@ -49,14 +46,22 @@ const createCharacter = async (req, res) => {
 const updateCharacter = async (req, res) => {        
     try {
         const characterInfo = req.body;
-        const characterModel = Character;
         const id = req.params.characterId;
-        const updatedRows = await characterModel.update(characterInfo, {
+
+        const isInUse = await TaleCharacter.findOne({
+            where: { characterId: id }
+        });
+
+        if (isInUse) {
+            return res.status(409).json({ msg: 'Character in use' });
+        }
+
+        const updatedRows = await Character.update(characterInfo, {
             where: { id: id }
         });
         
         if (updatedRows) {
-            const updatedCharacter = await characterModel.findByPk(id);
+            const updatedCharacter = await Character.findByPk(id);
             return res.json({
                 msg: 'Character updated successfully',
                 updatedCharacter
@@ -71,9 +76,16 @@ const updateCharacter = async (req, res) => {
 const deleteCharacter = async (req, res) => {
     try {       
         const id = req.params.characterId;
+
+        const isInUse = await TaleCharacter.findOne({
+            where: { characterId: id }
+        });
+
+        if (isInUse) {
+            return res.status(409).json({ msg: 'Character in use' });
+        }
         
-        const characterModel = Character;
-        const deletedRows = await characterModel.destroy({
+        const deletedRows = await Character.destroy({
             where: { id: id },
             logging: console.log
         });
