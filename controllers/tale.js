@@ -10,7 +10,7 @@ const getTales = async (req, res) => {
     try {
         const tales = await Tale.findAll({
             where: { 
-                authorId: req.query.authorId,
+                authorId: req.user.id,
             }
         });
         res.json(tales);
@@ -45,7 +45,7 @@ const createTale = async (req, res) => {
             return res.status(409).json({ msg: 'Tale already exists' });
         }
 
-        const {key} = await s3Client.uploadFile(req.file, newTaleData.authorId, newTaleData.title);
+        const {key} = await s3Client.uploadFile(req.file, req.user.id, newTaleData.title);
         newTaleData.taleImage = key;
 
         taleGenerator.genTale(newTaleData);

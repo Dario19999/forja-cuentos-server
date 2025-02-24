@@ -1,4 +1,6 @@
 const Character = require('../database/models/Character');
+const TaleCharacter = require('../database/models/TaleCharacter');
+
 const authenticateToken = require('../middleware/auth');
 
 const getCharacters = async (req, res) => {
@@ -6,7 +8,7 @@ const getCharacters = async (req, res) => {
         const characterModel = Character;
         const characters = await characterModel.findAll({
             where: { 
-                authorId: req.query.authorId,
+                authorId: req.user.id,
             }
         });
         res.json(characters);

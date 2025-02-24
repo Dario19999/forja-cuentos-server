@@ -8,7 +8,7 @@ require('dotenv').config();
 const getUser = async (req, res) => {    
     try {
         const userModel = User;
-        const id = req.params.userId;
+        const id = req.user.id;
         const user = await userModel.findByPk(id);
         if (!user) {
             return res.status(404).json({ msg: 'User not found' });
@@ -57,7 +57,7 @@ const updateUser = async (req, res) => {
     try {
         const userInfo = req.body;
         const userModel = User;
-        const id = req.params.userId;
+        const id = req.user.id;
         const updatedRows = await userModel.update(userInfo, {
             where: { id: id }
         });
@@ -77,7 +77,7 @@ const updateUser = async (req, res) => {
 
 const deleteUser = async (req, res) => {
     try {       
-        const id = req.params.userId;
+        const id = req.user.id;
         
         const userModel = User;
         const deletedRows = await userModel.destroy({
@@ -141,7 +141,7 @@ const login = async (req, res) => {
 }
 
 const notFound = (req, res) => {
-    const id = req.params.userId;
+    const id = req.user.id;
     res.status(404).json({
         msg: '404 - Not Found',
         id
