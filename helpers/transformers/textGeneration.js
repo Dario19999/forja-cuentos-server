@@ -1,8 +1,9 @@
-const { pipeline, env } = require("@xenova/transformers");
 require('dotenv').config();
-
-env.allowLocalModels = false; // Desactiva modelos locales
-env.backends.onnx.wasm.numThreads = 1; // Optimiza el uso de recursos
+const { OpenAI } = require('openai');
+const openAi = new OpenAI({
+    baseURL: 'https://api.deepseek.com',
+    apiKey: process.env.DEEPSEEK_API_KEY
+});
 
 class TaleGenerator {
     
@@ -10,33 +11,41 @@ class TaleGenerator {
     #synopsis = "";
     
     constructor() {
-        this.generatorModel = "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B";
-        this.initializeGenerator();
+        this.generatorModel = "deepseek-chat";
     }
-
-    async initializeGenerator() {
-        console.log("Cargando el modelo.");
-        this.generator = await pipeline("text-generation", this.generatorModel, {
-            use_auth_token: process.env.HF_TOKEN,
-        });
-    }
-    
+     
     #generateText = async (prompt) => {
-
-        const output = await generator(prompt, {
-            max_new_tokens: 1000, // Cantidad aproximada de plantas a generar
-            temperature: 0.7,     // Controla la creatividad
-            top_k: 50,           // Reduce la aleatoriedad
-            top_p: 0.9           // Controla la diversidad de la salida
+        
+        const completion = await openAi.chat.completions.create({
+            model: this.generatorModel,
+            messages: [
+                {
+                    role: 'system',
+                    content: `Como escritor latinoamericano, genera un cuento literario en español latino con la siguiente estructura:
+Debe carecer por completo y en cualquier aspecto de contenido sexual explícito, descripciones gráficas de violencia, lenguaje ofensivo o contenido que pueda ser considerado inapropiado para menores de edad.
+La respuesta debe de ser únicamente el cuento literario, sin ningún tipo de contenido adicional.
+No debe pasar de 1000 palabras.`
+                },
+                {
+                    role: 'user',
+                    content: prompt
+                }
+            ],
+            max_tokens: 1000,
+            temperature: 1.5,
+            top_p: 0.9,
+            response_format:{"type": "text"}
         });
 
-        return output[0].generated_text
+        console.log(completion);
+
+        return completion.choices[0].message.content
     };
 
     genTale = async (taleData) => {
 
         const characterList = taleData.characters.map(character=> {
-            return `    - ${character.type}: ${character.name}. ${character.role}`;
+            return `    - ${character.type}: Su nombre es ${character.name}. ${character.role}`;
         });
         
         let parsedGenre = '';
@@ -49,23 +58,28 @@ class TaleGenerator {
         }
 
         const talePrompt = `
-            Como escritor latinoamericano, genera un cuento literario con la siguiente estructura:
-            Debe carecer por completo y en cualquier aspecto de contenido sexual explícito, descripciones gráficas de violencia, lenguaje ofensivo o contenido que pueda ser considerado inapropiado para menores de edad.
-            La respuesta debe de ser únicamente el cuento literario, sin ningún tipo de contenido adicional.
-            El género del cuento es: ${parsedGenre}
-            El cuento tiene ${taleData.characters.length} personajes, los cuales son:
-            ${characterList.join('\n')}
-            La narración del cuento tiene estilo de: ${taleData.narrator}
-            La introducción del cuento es: ${taleData.introduction}	
-            El desarrollo del cuento es: ${taleData.development}
-            La conclusión del cuento es: ${taleData.conclusion}
-        `
-        console.log(talePrompt);
-        // const tale = await this.#generateText(talePrompt);
-        // return tale;
-    }
+Redacta un cuento que tenga las siguientes características:
+El título del cuento es: ${taleData.title}
+El género del cuento es: ${parsedGenre}
+El cuento tiene ${taleData.characters.length} personajes, los cuales son:
+${characterList.join('\n')}
+La narración del cuento tiene estilo de: ${taleData.narrator.style}
+La introducción del cuento es: ${taleData.introduction}	
+El desarrollo del cuento es: ${taleData.development}
+La conclusión del cuento es: ${taleData.conclusion}`;
+
+        this.#fullTale = await this.#generateText(talePrompt);
+    } 
 
     genSynopsis = async () => {
+    }
+
+    get getFullTale() {
+        return this.#fullTale;
+    }
+
+    get getSypnosis() {
+        return this.#synopsis;
     }
 }
 
