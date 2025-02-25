@@ -1,5 +1,6 @@
 const Tale = require('../database/models/Tale');
-const TaleCharacter = require('../database/models/TaleCharacter');
+const Character = require('../database/models/Character');
+const Narrator = require('../database/models/Narrator');
 
 const authenticateToken = require('../middleware/auth');
 
@@ -39,8 +40,13 @@ const createTale = async (req, res) => {
 
     const newTaleData = req.body;
 
-    try {
-        const existingTale = await Tale.findOne({ where: { title: newTaleData.title } }); 
+    try { 
+        const existingTale = await Tale.findOne({ 
+            where: { 
+                title: newTaleData.title,
+                authorId: req.user.id
+            } 
+        }); 
         if (existingTale) {
             return res.status(409).json({ msg: 'Tale already exists' });
         }
@@ -48,7 +54,36 @@ const createTale = async (req, res) => {
         const {key} = await s3Client.uploadFile(req.file, req.user.id, newTaleData.title);
         newTaleData.taleImage = key;
 
-        taleGenerator.genTale(newTaleData);
+        const narratorData = await Narrator.findOne({
+            where: { 
+                id: newTaleData.narratorId,
+            }
+        });
+        newTaleData.narrator = {
+            name: narratorData.alias,
+            style: narratorData.type,
+            voice: narratorData.voiceReference
+        };
+        
+        let characterList = await Character.findAll({
+            where: { 
+                id: newTaleData.characters,
+            }
+        })
+        
+        characterList = characterList.map(character => {
+            return {
+                name: character.name,
+                type: character.type,
+                role: character.role
+            }
+        });
+
+        newTaleData.characters = characterList;
+
+        // await taleGenerator.genTale(newTaleData);
+
+        console.log(taleGenerator.getFullTale);
 
         const newTale = await Tale.create(newTaleData);
         
@@ -81,6 +116,17 @@ const updateTale = (req, res) => {
 const deleteTale = async (req, res) => {
     try {
         const id = req.params.taleId;
+
+        const tale = await Tale.findByPk(id);
+        if (!tale) {
+            return res.status(404).json({ msg: 'Tale not found' });
+        }
+
+        let s3Key = tale.taleImage;
+        if (s3Key) {
+            const s3Client = new S3Client();
+            await s3Client.deleteFile(s3Key);
+        }
 
         const deletedRows = await Tale.destroy({
             where: { id: id },
