@@ -36,6 +36,22 @@ class S3Client {
             return error;
         }
     }
+
+    async deleteFile(key) {
+        const params = {
+            Bucket: process.env.AWS_S3_BUCKET,
+            Key: key
+        };
+
+        try {
+            const S3Response = await this.S3.deleteObject(params).promise();
+            if (S3Response) {
+                return S3Response;
+            }
+        } catch (error) {
+            return error;
+        }
+    }
 }
 
 module.exports = S3Client;
