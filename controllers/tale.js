@@ -6,6 +6,8 @@ const TaleCharacter = require('../database/models/TaleCharacter');
 const authenticateToken = require('../middleware/auth');
 
 const S3Client = require('../helpers/aws/s3Client');
+const s3Client = new S3Client();
+
 const TaleGenerator = require('../helpers/transformers/textGeneration');
 
 const getTales = async (req, res) => {    
@@ -15,7 +17,13 @@ const getTales = async (req, res) => {
                 authorId: req.user.id,
             }
         });
-        res.json(tales);
+
+        const taleList = tales.map(tale => ({
+            ...tale.toJSON(),
+            imageUrl: s3Client.getPreSignedUrl(tale.taleImage)
+        }));
+
+        res.json(taleList);
     } catch (error) {
         res.status(500).json({ msg: 'Internal Server Error', error: error.message });
     }
@@ -28,15 +36,19 @@ const getTale = async (req, res) => {
         if (!tale) {
             return res.status(404).json({ msg: 'Tale not found' });
         }
-        res.json(tale);
-        console.log("ID", id);
+
+        const taleWithImage = {
+            ...tale.toJSON(),
+            imageUrl: s3Client.getPreSignedUrl(tale.taleImage)
+        }
+
+        res.json(taleWithImage);
     } catch (error) {
         res.status(500).json({ msg: 'Internal Server Error', error: error.message });
     }
 }   
 
-const createTale = async (req, res) => {    
-    const s3Client = new S3Client();
+const createTale = async (req, res) => {
     const taleGenerator = new TaleGenerator();
 
     const newTaleData = req.body;

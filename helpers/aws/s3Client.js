@@ -52,6 +52,21 @@ class S3Client {
             return error;
         }
     }
+
+    getPreSignedUrl(key) { 
+        const params = {
+            Bucket: process.env.AWS_S3_BUCKET,
+            Key: key,
+            Expires: 3600
+        };
+
+        try {
+            const url = this.S3.getSignedUrl('getObject', params);
+            return url;
+        } catch (error) {
+            return error;
+        }
+    }
 }
 
 module.exports = S3Client;
