@@ -33,6 +33,7 @@ const getCharacter = async (req, res) => {
 const createCharacter = async (req, res) => {    
     try {
         const newCharacter = req.body;
+        newCharacter.authorId = req.user.id;
         const createdCharacter = await Character.create(newCharacter);
         res.status(201).json({
             msg: 'Character created successfully',

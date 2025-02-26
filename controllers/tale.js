@@ -1,6 +1,7 @@
 const Tale = require('../database/models/Tale');
 const Character = require('../database/models/Character');
 const Narrator = require('../database/models/Narrator');
+const TaleCharacter = require('../database/models/TaleCharacter');
 
 const authenticateToken = require('../middleware/auth');
 
@@ -39,6 +40,9 @@ const createTale = async (req, res) => {
     const taleGenerator = new TaleGenerator();
 
     const newTaleData = req.body;
+    newTaleData.authorId = req.user.id;
+    
+    let genTaleData = newTaleData;
 
     try { 
         const existingTale = await Tale.findOne({ 
@@ -59,7 +63,7 @@ const createTale = async (req, res) => {
                 id: newTaleData.narratorId,
             }
         });
-        newTaleData.narrator = {
+        genTaleData.narrator = {
             name: narratorData.alias,
             style: narratorData.type,
             voice: narratorData.voiceReference
@@ -79,16 +83,18 @@ const createTale = async (req, res) => {
             }
         });
 
-        newTaleData.characters = characterList;
+        genTaleData.parsedCharacters = characterList;
 
-        // await taleGenerator.genTale(newTaleData);
+        await taleGenerator.genTale(genTaleData);
+        newTaleData.fullTale = taleGenerator.getFullTale;
 
-        console.log(taleGenerator.getFullTale);
+        await taleGenerator.genSynopsis();
+        newTaleData.synopsis = taleGenerator.getSypnosis;
 
         const newTale = await Tale.create(newTaleData);
         
-        if (characters && characters.length > 0) {
-            const taleCharacters = characters.map(characterId => ({
+        if (newTale && newTaleData.characters && newTaleData.characters.length > 0) {
+            const taleCharacters = newTaleData.characters.map(characterId => ({
               taleId: newTale.id,
               characterId: parseInt(characterId),
             }));
@@ -97,7 +103,8 @@ const createTale = async (req, res) => {
         }
 
         res.status(201).json({
-            msg: 'Tale created successfully'
+            msg: 'Tale created successfully',
+            newTale
         });
     } 
     catch (error) {

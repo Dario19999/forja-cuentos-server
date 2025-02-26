@@ -34,6 +34,7 @@ const getNarrator = async (req, res) => {
 const createNarrator = async (req, res) => {    
     try {
         const newNarrator = req.body;
+        newNarrator.authorId = req.user.id;
         const createdNarrator = await Narrator.create(newNarrator);
         res.status(201).json({
             msg: 'Narrator created successfully',
