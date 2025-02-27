@@ -124,12 +124,47 @@ const createTale = async (req, res) => {
     }
 }
 
-const updateTale = (req, res) => {        
+const updateTale = async (req, res) => {   
+    const taleUpdateInfo = req.body;     
     const id = req.params.taleId;
-    res.json({
-        msg: 'put API',
-        id
-    });
+
+    try { 
+
+        let s3Key = taleUpdateInfo.taleImage;
+        if (s3Key) {
+            const s3Client = new S3Client(); 
+            await s3Client.deleteFile(s3Key);
+        }
+
+        const {key} = await s3Client.uploadFile(req.file, req.user.id, taleUpdateInfo.taleTitle);
+        taleUpdateInfo.taleImage = key;
+
+        const updatedRows = await Tale.update(
+            { 
+                title: taleUpdateInfo.taleTitle,
+                taleImage: taleUpdateInfo.taleImage,
+                fullTale: taleUpdateInfo.taleBody,
+                synopsis: taleUpdateInfo.taleSynopsis
+            },
+            {
+                where: { id: id }
+            }
+        );
+    
+        if(updatedRows) {
+            const updatedTale = await Tale.findByPk(id);
+            return res.json({
+                msg: 'Tale updated successfully',
+                updatedTale
+            });
+        }
+    
+        res.status(404).json({ msg: 'Tale not found' });
+    } catch (error) {
+        res.status(500).json({ msg: 'Internal Server Error', error: error.message });
+    }
+
+   
 }
 
 const deleteTale = async (req, res) => {

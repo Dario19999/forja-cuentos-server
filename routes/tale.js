@@ -20,10 +20,10 @@ router.get('/:taleId', getTale);
 
 router.post('/', upload.single('taleImage'), createTale);
 
-router.put('/:taleId', updateTale);
+router.put('/:taleId', upload.single('taleImage'), updateTale);
 
 router.delete('/:taleId', deleteTale);
 
 router.put('*', notFound);
 
-module.exports = router;
+module.exports = router; 
