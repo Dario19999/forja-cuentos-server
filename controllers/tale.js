@@ -130,7 +130,14 @@ const updateTale = async (req, res) => {
 
     try { 
 
-        let s3Key = taleUpdateInfo.taleImage;
+        const existingTale = await Tale.findOne({
+            where: { 
+                id: id,
+                authorId: req.user.id
+            } 
+        });
+
+        let s3Key = existingTale.taleImage;
         if (s3Key) {
             const s3Client = new S3Client(); 
             await s3Client.deleteFile(s3Key);
