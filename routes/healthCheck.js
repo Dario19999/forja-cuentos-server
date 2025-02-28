@@ -1,8 +1,11 @@
 const {Router} = require('express');
 const router = Router();
 
-router.get('/health', (req, res) => {
-    res.statusCode(200).json({
+router.get('/', (req, res) => {
+    res.json({
+        code: 200,
         status: 'UP'
     });
 });
+
+module.exports = router;

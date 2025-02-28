@@ -39,7 +39,7 @@ class Server {
         this.express.use('/api/character', require('../routes/character'));
         this.express.use('/api/narrator', require('../routes/narrator'));
         this.express.use('/api/tale', require('../routes/tale'));
-        this.express.use('/', require('../routes/healthCheck'));
+        this.express.use('/api/health', require('../routes/healthCheck'));
 
         // Guard routes
         this.express.use((req, res, next) => {
