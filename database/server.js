@@ -4,6 +4,7 @@ const { sequelize } = require('./config/database');
 const cookieParser = require('cookie-parser');
 
 class Server {
+
     constructor() {
         this.express = express();
         this.port = process.env.PORT;
@@ -29,7 +30,18 @@ class Server {
 
     middleware() {
         this.express.use(express.static('public'));
-        this.express.use(cors());
+        this.express.use(cors({
+            origin: function (origin, callback) {
+                const allowedOrigins = ['http://localhost:4200'];
+                if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+                  callback(null, true);
+                } else {
+                  callback(new Error('No permitido por CORS'));
+                }
+              },
+              credentials: true,
+              optionsSuccessStatus: 200
+        }));
         this.express.use(express.json());
         this.express.use(cookieParser());
     }
