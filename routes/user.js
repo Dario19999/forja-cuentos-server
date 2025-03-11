@@ -11,7 +11,7 @@ const {
 
 const router = Router();
  
-router.get('/:userId', getUser);
+router.get('/', getUser);
 
 router.post('/login', login);
 
@@ -19,9 +19,9 @@ router.post('/logout', logout);
 
 router.post('/', createUser);
 
-router.put('/:userId', updateUser);
+router.put('/', updateUser);
 
-router.delete('/:userId', deleteUser);
+router.delete('/', deleteUser);
 
 router.put('*', notFound);
 
