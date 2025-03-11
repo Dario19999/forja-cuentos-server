@@ -26,14 +26,14 @@ Evita agregar el título del cuento en el cuerpo del texto.
 El cuento debe ser original y no debe ser una copia de otro cuento.
 Debe carecer por completo y en cualquier aspecto de contenido sexual explícito, descripciones gráficas de violencia, lenguaje ofensivo o contenido que pueda ser considerado inapropiado para menores de edad.
 La respuesta debe de ser únicamente el cuento literario, sin ningún tipo de contenido adicional.
-No debe pasar de 1000 palabras.`
+Se debe dejar de redactar si se llega al límite de palabras establecido. Evita dejar frases incompletas y el texto a medias.`
                 },
                 {
                     role: 'user',
                     content: prompt
                 }
             ],
-            max_tokens: isSynopsis ? 100 : 1000, // Ajusta el número de tokens para la sinopsis
+            max_tokens: isSynopsis ? 100 : 700, // Ajusta el número de tokens para la sinopsis
             temperature: isSynopsis ? 0.7 : 0.8,  // Ajusta la temperatura para la sinopsis
             top_p: 0.9
         });
@@ -58,6 +58,7 @@ No debe pasar de 1000 palabras.`
 
         const talePrompt = `
 Redacta un cuento que tenga las siguientes características:
+Debe tener un mínimo de 500 palabras y no pasar de 700 palabras.
 El título del cuento es: ${taleData.title}
 El género del cuento es: ${parsedGenre}
 El cuento tiene ${taleData.parsedCharacters.length} personajes, los cuales son:
@@ -73,10 +74,10 @@ La conclusión del cuento es: ${taleData.conclusion}`;
     genSynopsis = async () => {
         const synopsisPrompt = `
 Eres un experto en resumir cuentos. Tu tarea es generar una sinopsis breve y concisa del siguiente cuento. La sinopsis debe:
-- Tener un máximo de 100 palabras.
-- Capturar la esencia del cuento, incluyendo los personajes principales, el conflicto y el desenlace.
-- Evitar detalles innecesarios.
-- Estar escrita en español latino.
+Debe tener un mínimo de 40 palabras y un máximo de 50 palabras.
+Capturar la esencia del cuento, incluyendo los personajes principales, el conflicto y el desenlace.
+Evitar detalles innecesarios.
+Estar escrita en español latino.
 
 Cuento:
 ${this.#fullTale}`;
