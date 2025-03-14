@@ -5,6 +5,7 @@ const {
     createNarrator,
     updateNarrator,
     deleteNarrator,
+    narrate,
     notFound
 } = require('../controllers/narrator');
 
@@ -15,6 +16,8 @@ router.get('/list', getNarrators);
 router.get('/:narratorId', getNarrator);
 
 router.post('/', createNarrator);
+
+router.post('/narration', narrate);
 
 router.put('/:narratorId', updateNarrator);
 
