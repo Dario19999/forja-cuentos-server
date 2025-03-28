@@ -26,14 +26,14 @@ Evita agregar el título del cuento en el cuerpo del texto.
 El cuento debe ser original y no debe ser una copia de otro cuento.
 Debe carecer por completo y en cualquier aspecto de contenido sexual explícito, descripciones gráficas de violencia, lenguaje ofensivo o contenido que pueda ser considerado inapropiado para menores de edad.
 La respuesta debe de ser únicamente el cuento literario, sin ningún tipo de contenido adicional.
-Se debe dejar de redactar si se llega al límite de palabras establecido. Evita dejar frases incompletas y el texto a medias.`
+No se debe dejar de redactar aún si se llega al límite de palabras establecido. Evita dejar frases incompletas, el texto a medias o partes del cuento sin terminar.`
                 },
                 {
                     role: 'user',
                     content: prompt
                 }
             ],
-            max_tokens: isSynopsis ? 100 : 700, // Ajusta el número de tokens para la sinopsis
+            max_tokens: isSynopsis ? 100 : 1500, // Ajusta el número de tokens para la sinopsis
             temperature: isSynopsis ? 0.7 : 0.8,  // Ajusta la temperatura para la sinopsis
             top_p: 0.9
         });

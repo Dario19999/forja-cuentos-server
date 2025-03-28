@@ -8,6 +8,7 @@ const authenticateToken = require('../middleware/auth');
 const S3Client = require('../helpers/aws/s3Client');
 const s3Client = new S3Client();
 
+const inapropiateValidation = require('../helpers/validations/inapropiateValidation');
 const TaleGenerator = require('../helpers/transformers/textGeneration');
 
 const getTales = async (req, res) => {    
@@ -57,6 +58,12 @@ const createTale = async (req, res) => {
     
     let genTaleData = newTaleData;
 
+    const taleParts = `${newTaleData.introduction} ${newTaleData.development} ${newTaleData.conclusion}`;
+
+    if(inapropiateValidation(taleParts)) {
+        return res.status(422).json({ msg: 'Invalid request: Inapropiate content detected' });
+    }
+    
     if(!newTaleData || !taleImage) {
         return res.status(400).json({ msg: 'Invalid request: No data and/or image provided' });
     }
