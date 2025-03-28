@@ -127,15 +127,23 @@ const login = async (req, res) => {
             ...publicUser
         } = user.dataValues;
 
-        res
-        .cookie('access_token', token, {
+        const cookieOptions = process.env.NODE_ENV === 'production' ? {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
-            domain: process.env.NODE_ENV === 'production' ? 'https://api.forja-cuentos.com' : 'http://localhost:3000',
-            maxAge: 1000 * 60 * 60, // 1 hour
+            secure: true,
+            sameSite: 'none',
+            domain: '.forja-cuentos.com',
+            maxAge:  1000 * 60 * 60,
             path: '/'
-        })
+        } : {
+            httpOnly: true,
+            secure: false,  // Permitido en HTTP local
+            sameSite: 'lax',  // Balance entre seguridad y funcionalidad
+            maxAge:  1000 * 60 * 60,
+            path: '/'
+        };
+
+        res
+        .cookie('access_token', token, cookieOptions)
         .json({ publicUser, token });
     } catch (error) {
         res.status(500).json({ msg: 'Internal Server Error', error: error.message });
