@@ -32,7 +32,11 @@ class Server {
         this.express.use(express.static('public'));
         this.express.use(cors({
             origin: function (origin, callback) {
-                const allowedOrigins = ['http://localhost:4200'];
+                const allowedOrigins = [
+                    'http://localhost:4200',
+                    'https://api.forja-cuentos.com',
+                    'file://',
+                ];
                 if (!origin || allowedOrigins.indexOf(origin) !== -1) {
                   callback(null, true);
                 } else {

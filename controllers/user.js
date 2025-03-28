@@ -131,8 +131,10 @@ const login = async (req, res) => {
         .cookie('access_token', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 1000 * 60 * 60 // 1 hour
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+            domain: process.env.NODE_ENV === 'production' ? 'http://localhost:3000' : 'https://api.forja-cuentos.com',
+            maxAge: 1000 * 60 * 60, // 1 hour
+            path: '/'
         })
         .json({ publicUser, token });
     } catch (error) {
