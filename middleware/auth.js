@@ -3,7 +3,6 @@ require('dotenv').config();
 
 const authenticateToken = (req, res, next) => {
     const token = req.cookies.access_token;
-
     if (!token) {
         return res.status(401).json({ msg: 'Unauthorized: No token provided' });
     }
@@ -13,8 +12,8 @@ const authenticateToken = (req, res, next) => {
             return res.status(403).json({ msg: 'Unauthorized: Invalid token' });
         }
         req.user = user;
-        next();
     });
+    next();
 };
 
 module.exports = authenticateToken;

@@ -8,6 +8,7 @@ const authenticateToken = require('../middleware/auth');
 const S3Client = require('../helpers/aws/s3Client');
 const s3Client = new S3Client();
 
+const inapropiateValidation = require('../helpers/validations/inapropiateValidation');
 const TaleGenerator = require('../helpers/transformers/textGeneration');
 
 const getTales = async (req, res) => {    
@@ -52,9 +53,22 @@ const createTale = async (req, res) => {
     const taleGenerator = new TaleGenerator();
 
     const newTaleData = req.body;
+    const taleImage = req.file;
     newTaleData.authorId = req.user.id;
     
     let genTaleData = newTaleData;
+
+    const taleParts = `${newTaleData.introduction} ${newTaleData.development} ${newTaleData.conclusion}`;
+
+    if(inapropiateValidation(taleParts)) {
+        return res.status(422).json({ msg: 'Invalid request: Inapropiate content detected' });
+    }
+    
+    if(!newTaleData || !taleImage) {
+        return res.status(400).json({ msg: 'Invalid request: No data and/or image provided' });
+    }
+
+    newTaleData.characters = JSON.parse(newTaleData.characters).map(character => parseInt(character));
 
     try { 
         const existingTale = await Tale.findOne({ 
@@ -127,32 +141,56 @@ const createTale = async (req, res) => {
 const updateTale = async (req, res) => {   
     const taleUpdateInfo = req.body;     
     const id = req.params.taleId;
+    let updateInfo = {};
 
     try { 
 
-        const existingTale = await Tale.findOne({
+        const taleToUpdate = await Tale.findOne({
             where: { 
                 id: id,
                 authorId: req.user.id
             } 
         });
 
-        let s3Key = existingTale.taleImage;
-        if (s3Key) {
-            const s3Client = new S3Client(); 
-            await s3Client.deleteFile(s3Key);
+        if(taleToUpdate.title !== taleUpdateInfo.taleTitle) {        
+            const existingTale = await Tale.findOne({ 
+                where: { 
+                    title: taleToUpdate.title,
+                    authorId: req.user.id
+                } 
+            }); 
+            if (existingTale) {
+                return res.status(409).json({ msg: 'Tale already exists' });
+            }
         }
 
-        const {key} = await s3Client.uploadFile(req.file, req.user.id, taleUpdateInfo.taleTitle);
-        taleUpdateInfo.taleImage = key;
+        if (req.file) {
+            let s3Key = taleToUpdate.taleImage;
+            if (s3Key) {
+                const s3Client = new S3Client(); 
+                await s3Client.deleteFile(s3Key);
+            }
 
-        const updatedRows = await Tale.update(
-            { 
+            const {key} = await s3Client.uploadFile(req.file, req.user.id, taleUpdateInfo.taleTitle);
+            taleUpdateInfo.taleImage = key;
+
+            updateInfo = { 
                 title: taleUpdateInfo.taleTitle,
                 taleImage: taleUpdateInfo.taleImage,
                 fullTale: taleUpdateInfo.taleBody,
                 synopsis: taleUpdateInfo.taleSynopsis
-            },
+            }
+        }
+        else {
+            updateInfo = {
+                title: taleUpdateInfo.taleTitle,
+                fullTale: taleUpdateInfo.taleBody,
+                synopsis: taleUpdateInfo.taleSynopsis
+            }
+        }
+
+        const updatedRows = await Tale.update(
+            updateInfo,
             {
                 where: { id: id }
             }

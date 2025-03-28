@@ -3,6 +3,8 @@ const Tale = require('../database/models/Tale');
 
 const authenticateToken = require('../middleware/auth');
 
+const generateNarration = require('../helpers/transformers/speechGeneration');
+
 const getNarrators = async (req, res) => {    
     try {
         const narrators = await Narrator.findAll({
@@ -104,6 +106,25 @@ const deleteNarrator = async (req, res) => {
     }
 }   
 
+const narrate = async (req, res) => {
+    try {
+        const narrationData = req.body;
+        const id = narrationData.narratorId;
+        const textSegment = narrationData.textSegment;
+        
+        const narrator = await Narrator.findByPk(id);
+
+        if(narrator) {
+            const speechAudio = await generateNarration(textSegment, narrator.voiceReference);
+            res.setHeader('Content-Type', 'audio/mpeg');
+            return res.send(speechAudio);
+        }
+        return res.status(404).json({msg: 'Narrator not found'});
+    } catch (error) {
+        return res.status(500).json({ msg: 'Internal Server Error', error: error.message });
+    }
+}
+
 const notFound = (req, res) => {
     const id = req.params.narratorId;
     res.status(404).json({
@@ -118,5 +139,6 @@ module.exports = {
     createNarrator: [authenticateToken, createNarrator],
     updateNarrator: [authenticateToken, updateNarrator],
     deleteNarrator: [authenticateToken, deleteNarrator],
+    narrate: [authenticateToken, narrate],
     notFound
 }
