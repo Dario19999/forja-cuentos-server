@@ -132,7 +132,7 @@ const login = async (req, res) => {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
-            domain: process.env.NODE_ENV === 'production' ? 'http://localhost:3000' : 'https://api.forja-cuentos.com',
+            domain: process.env.NODE_ENV === 'production' ? 'https://api.forja-cuentos.com' : 'http://localhost:3000',
             maxAge: 1000 * 60 * 60, // 1 hour
             path: '/'
         })
