@@ -25,7 +25,10 @@ class TaleGenerator {
 Evita agregar el título del cuento en el cuerpo del texto.
 El cuento debe ser original y no debe ser una copia de otro cuento.
 Debe carecer por completo y en cualquier aspecto de contenido sexual explícito, descripciones gráficas de violencia, lenguaje ofensivo o contenido que pueda ser considerado inapropiado para menores de edad.
-La respuesta debe de ser únicamente el cuento literario, sin ningún tipo de contenido adicional.
+La respuesta debe de ser únicamente el cuento literario, sin ningún tipo de contenido adicional. No se debe incluir la palabra "fin" o "final" al final del cuento.
+No se debe incluir ningún tipo de comentario o aclaración adicional al cuento.
+No se debe incluir ningún tipo de información adicional al cuento, como por ejemplo: "Este es un cuento de ciencia ficción" o "Este es un cuento de terror".
+No se debe incluir el título del cuento en el cuerpo del texto.
 No se debe dejar de redactar aún si se llega al límite de palabras establecido. Evita dejar frases incompletas, el texto a medias o partes del cuento sin terminar.`
                 },
                 {
@@ -74,7 +77,7 @@ La conclusión del cuento es: ${taleData.conclusion}`;
     genSynopsis = async () => {
         const synopsisPrompt = `
 Eres un experto en resumir cuentos. Tu tarea es generar una sinopsis breve y concisa del siguiente cuento. La sinopsis debe:
-Debe tener un mínimo de 40 palabras y un máximo de 50 palabras.
+Debe tener un mínimo de 40 palabras.
 Capturar la esencia del cuento, incluyendo los personajes principales, el conflicto y el desenlace.
 Evitar detalles innecesarios.
 Estar escrita en español latino.

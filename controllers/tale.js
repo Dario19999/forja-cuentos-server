@@ -58,7 +58,7 @@ const createTale = async (req, res) => {
     
     let genTaleData = newTaleData;
 
-    const taleParts = `${newTaleData.introduction} ${newTaleData.development} ${newTaleData.conclusion}`;
+    const taleParts = `${newTaleData.title}\n${newTaleData.introduction}\n${newTaleData.development}\n${newTaleData.conclusion}`;
 
     if(inapropiateValidation(taleParts)) {
         return res.status(422).json({ msg: 'Invalid request: Inapropiate content detected' });
